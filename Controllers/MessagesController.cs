@@ -7,6 +7,8 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using Microsoft.Bot.Connector;
 using Newtonsoft.Json;
+using Contoso_Bank.Models;
+using System.Collections.Generic;
 
 namespace Contoso_Bank
 {
@@ -21,12 +23,27 @@ namespace Contoso_Bank
         {
             if (activity.Type == ActivityTypes.Message)
             {
+                HttpClient client = new HttpClient();
+                client.DefaultRequestHeaders.Add("ZUMO-API-VERSION", "2.0.0");
+                string x = await client.GetStringAsync(new Uri("http://xizhescontosobank.azurewebsites.net/tables/xizhescontosobank"));
+                List<bankObject.RootObject> rootObjectList;
+                rootObjectList = JsonConvert.DeserializeObject<List<bankObject.RootObject>>(x);
+                string id = rootObjectList[0].id;          
+                string userName = rootObjectList[0].userName;
+                string password = rootObjectList[0].password;
+                double savings = rootObjectList[0].savings;
+                string address = rootObjectList[0].address;
+                string phone = rootObjectList[0].phone;
+
+
+
+
                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                 // calculate something for us to return
                 int length = (activity.Text ?? string.Empty).Length;
 
                 // return our reply to the user
-                Activity reply = activity.CreateReply($"You sent {activity.Text} which was {length} characters");
+                Activity reply = activity.CreateReply($"Your name is {userName}");
                 await connector.Conversations.ReplyToActivityAsync(reply);
             }
             else
