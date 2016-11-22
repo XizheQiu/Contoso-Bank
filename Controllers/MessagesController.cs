@@ -23,11 +23,23 @@ namespace Contoso_Bank
         {
             if (activity.Type == ActivityTypes.Message)
             {
+                //interpret intent
+
+                HttpClient luisClient = new HttpClient();
+                string input = System.Web.HttpUtility.UrlEncode(activity.Text);
+                string luisResponse = await luisClient.GetStringAsync(new Uri("https://api.projectoxford.ai/luis/v2.0/apps/2dbd88e3-96b5-4b48-91bd-2362f25f803f?subscription-key=fbeed415937941c4a78980f81acff101&q=" + input + "&verbose=true"));
+                luisObject.RootObject luisRootObject = JsonConvert.DeserializeObject<luisObject.RootObject>(luisResponse);
+                string intent = luisRootObject.topScoringIntent.intent;
+                double score = luisRootObject.topScoringIntent.score;
+
+                //accessing easytable
                 HttpClient client = new HttpClient();
                 client.DefaultRequestHeaders.Add("ZUMO-API-VERSION", "2.0.0");
                 string x = await client.GetStringAsync(new Uri("http://xizhescontosobank.azurewebsites.net/tables/xizhescontosobank"));
                 List<bankObject.RootObject> rootObjectList;
                 rootObjectList = JsonConvert.DeserializeObject<List<bankObject.RootObject>>(x);
+
+          
                 string id = rootObjectList[0].id;          
                 string userName = rootObjectList[0].userName;
                 string password = rootObjectList[0].password;
@@ -35,7 +47,13 @@ namespace Contoso_Bank
                 string address = rootObjectList[0].address;
                 string phone = rootObjectList[0].phone;
 
+                //create
 
+                //retreieve
+
+                //update
+
+                //delete
 
 
                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
@@ -43,7 +61,8 @@ namespace Contoso_Bank
                 int length = (activity.Text ?? string.Empty).Length;
 
                 // return our reply to the user
-                Activity reply = activity.CreateReply($"Your name is {userName}");
+                //Activity reply = activity.CreateReply($"Your intent is {intent} and score is {score}");
+                Activity reply = activity.CreateReply($"Your intent is {intent}");
                 await connector.Conversations.ReplyToActivityAsync(reply);
             }
             else
