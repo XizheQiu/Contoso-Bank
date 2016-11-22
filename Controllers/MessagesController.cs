@@ -38,8 +38,7 @@ namespace Contoso_Bank
                 string x = await client.GetStringAsync(new Uri("http://xizhescontosobank.azurewebsites.net/tables/xizhescontosobank"));
                 List<bankObject.RootObject> rootObjectList;
                 rootObjectList = JsonConvert.DeserializeObject<List<bankObject.RootObject>>(x);
-
-          
+                          
                 string id = rootObjectList[0].id;          
                 string userName = rootObjectList[0].userName;
                 string password = rootObjectList[0].password;
