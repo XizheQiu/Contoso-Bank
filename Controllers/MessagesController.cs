@@ -258,7 +258,7 @@ namespace Contoso_Bank
                     List<CardImage> cardImages = new List<CardImage>();
                     cardImages.Add(new CardImage(url: "http://drdianahoppe.com/wp-content/uploads/2013/04/Piggy-Bank.jpg"));
 
-                    ThumbnailCard plCard = new ThumbnailCard()
+                    HeroCard plCard = new HeroCard()
                     {
                         Title = "Confirmation",
                         Subtitle = "Enter 'Proceed/Retry/Cancel'",
