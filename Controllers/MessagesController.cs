@@ -266,8 +266,14 @@ namespace Contoso_Bank
                     };
                     cardButtons.Add(cancelButton);
 
-                    SigninCard plCard = new SigninCard()
+                    List<CardImage> cardImages = new List<CardImage>();
+                    cardImages.Add(new CardImage(url: "http://drdianahoppe.com/wp-content/uploads/2013/04/Piggy-Bank.jpg"));
+
+                    ThumbnailCard plCard = new ThumbnailCard()
                     {
+                        Title = "Confirmation",
+                        Text = $"Username: {userName}  \nPassword: {password}  \nAddress: {address}  \nPhone: {phone}",
+                        Images = cardImages,
                         Buttons = cardButtons
                     };
 
