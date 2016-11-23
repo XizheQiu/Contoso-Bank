@@ -25,7 +25,7 @@ namespace Contoso_Bank
         {
             if (activity.Type == ActivityTypes.Message)
             {
-                Activity reply = activity.CreateReply("Hi");
+                Activity reply = activity.CreateReply("Hi! I am the most AMAAAAZING bot of Xizhe Contoso Bank. You can ask me to help you register, check balance, deposit, withdraw or suspend your account. Oh and don't forget I can also check the exchange rate for you. So if you need anything, just come and have a chat with me :)");
                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                 string manualIntent = "none";
 
@@ -274,7 +274,6 @@ namespace Contoso_Bank
                     return Request.CreateResponse(HttpStatusCode.OK);
                 }
 
-
                 //handling deposit-------------------------------------------------------------------------------------------------------
                 if(userData.GetProperty<bool>("depositing"))
                 {
@@ -354,7 +353,7 @@ namespace Contoso_Bank
                             rootObject.savings += userData.GetProperty<double>("depositAmount");
                             await AzureManager.AzureManagerInstance.UpdatexizhesContosoBank(rootObject);
                             userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
-                            userData.SetProperty<bool>("depositing", false);
+                            userData.SetProperty<bool>("depositReady", false);
                             reply = activity.CreateReply($"Deposit suceeded, you now have {rootObject.savings}");
                             await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
                             await connector.Conversations.ReplyToActivityAsync(reply);
@@ -374,7 +373,6 @@ namespace Contoso_Bank
                     }
                     
                 }
-
 
                 //handling withdraw-------------------------------------------------------------------------------------------------------
                 if (userData.GetProperty<bool>("withdrawing"))
@@ -472,12 +470,9 @@ namespace Contoso_Bank
                         await connector.Conversations.ReplyToActivityAsync(reply);
                         return Request.CreateResponse(HttpStatusCode.OK);
                     }
-                }
-
-                
+                }                
 
                 //handling suspend-------------------------------------------------------------------------------------------------------
-
                 if (userData.GetProperty<bool>("suspending"))
                 {
                     if(activity.Text == "Suspend")
@@ -576,7 +571,44 @@ namespace Contoso_Bank
                             savings = rootObjectList[i].savings;
                         }
                     }
-                    reply = activity.CreateReply($"You have ${savings} in your account");
+
+                    Activity replyToConversation = activity.CreateReply();
+                    replyToConversation.Recipient = activity.From;
+                    replyToConversation.Type = "message";
+                    replyToConversation.Attachments = new List<Attachment>();
+
+                    List<CardImage> cardImages = new List<CardImage>();
+                    cardImages.Add(new CardImage(url: "http://drdianahoppe.com/wp-content/uploads/2013/04/Piggy-Bank.jpg"));
+
+                    List<CardAction> cardButtons = new List<CardAction>();
+                    CardAction proceedButton = new CardAction()
+                    {
+                        Value = "Deposit",
+                        Type = "postBack",
+                        Title = "Deposit",
+                    };
+                    cardButtons.Add(proceedButton);
+
+                    CardAction cancelButton = new CardAction()
+                    {
+                        Value = "Withdraw",
+                        Type = "postBack",
+                        Title = "Withdraw"
+                    };
+                    cardButtons.Add(cancelButton);
+
+                    HeroCard plCard = new HeroCard()
+                    {
+                        Title = "Account Balance",
+                        Text = $"You have ${savings} in your account",
+                        Images = cardImages,
+                        Buttons = cardButtons
+                    };
+
+                    Attachment plAttachment = plCard.ToAttachment();
+                    replyToConversation.Attachments.Add(plAttachment);
+                    await connector.Conversations.SendToConversationAsync(replyToConversation);
+                    return Request.CreateResponse(HttpStatusCode.OK);
                 }
 
                 //withdraw-------------------------------------------------------------------------------------------------------
