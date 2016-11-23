@@ -30,7 +30,7 @@ namespace Contoso_Bank
                 string manualIntent = "none";
 
                 //grabbing state-------------------------------------------------------------------------------------------------------
-                StateClient stateClient = activity.GetStateClient("39f856c6-327c-4245-bb11-0027f29094cd", "pTd6GoqkiH8mt1heyOCSDj8", activity.ServiceUrl);
+                StateClient stateClient = activity.GetStateClient();
                 BotData userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                 if(userData.GetProperty<bool>("loggedIn"))
                 {
