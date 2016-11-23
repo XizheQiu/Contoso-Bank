@@ -224,19 +224,8 @@ namespace Contoso_Bank
                     string password = userData.GetProperty<string>("password");
                     string address = userData.GetProperty<string>("address");
                     string phone = userData.GetProperty<string>("phone");
-                    
-                    Activity replyToConversation = activity.CreateReply($"Please confirm the following:");
-                    await connector.Conversations.SendToConversationAsync(replyToConversation);
-                    replyToConversation = activity.CreateReply($"Username: {userName}");
-                    await connector.Conversations.SendToConversationAsync(replyToConversation);
-                    replyToConversation = activity.CreateReply($"Password: {password}");
-                    await connector.Conversations.SendToConversationAsync(replyToConversation);
-                    replyToConversation = activity.CreateReply($"Address: {address}");
-                    await connector.Conversations.SendToConversationAsync(replyToConversation);
-                    replyToConversation = activity.CreateReply($"Phone: {phone}");
-                    await connector.Conversations.SendToConversationAsync(replyToConversation);
 
-                    replyToConversation = activity.CreateReply();
+                    Activity replyToConversation = activity.CreateReply();
                     replyToConversation.Recipient = activity.From;
                     replyToConversation.Type = "message";
                     replyToConversation.Attachments = new List<Attachment>();
@@ -245,15 +234,15 @@ namespace Contoso_Bank
                     CardAction proceedButton = new CardAction()
                     {
                         Value = "Proceed",
-                        Type = "imBack",
-                        Title = "Proceed"
+                        Type = "postBack",
+                        Title = "Proceed",
                     };
                     cardButtons.Add(proceedButton);
 
                     CardAction retryButton = new CardAction()
                     {
                         Value = "Retry",
-                        Type = "imBack",
+                        Type = "postBack",
                         Title = "Retry"
                     };
                     cardButtons.Add(retryButton);
@@ -261,7 +250,7 @@ namespace Contoso_Bank
                     CardAction cancelButton = new CardAction()
                     {
                         Value = "Cancel",
-                        Type = "imBack",
+                        Type = "postBack",
                         Title = "Cancel"
                     };
                     cardButtons.Add(cancelButton);
