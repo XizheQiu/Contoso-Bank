@@ -55,7 +55,6 @@ namespace Contoso_Bank
 
                 List<xizhesContosoBank> rootObjectList = await AzureManager.AzureManagerInstance.GetxizhesContosoBanks();
 
-
                 //authorization
 
                 if (userData.GetProperty<bool>("loggingInUserName"))
@@ -281,7 +280,7 @@ namespace Contoso_Bank
                 }
 
 
-                //handling deposit
+                //handling deposit-------------------------------------------------------------------------------------------------------
                 if(userData.GetProperty<bool>("depositing"))
                 {
                     double amount;
@@ -320,9 +319,9 @@ namespace Contoso_Bank
                     }
                 }
 
-                
-                //handling withdraw
-                if(userData.GetProperty<bool>("withdrawing"))
+
+                //handling withdraw-------------------------------------------------------------------------------------------------------
+                if (userData.GetProperty<bool>("withdrawing"))
                 {
                     double amount;
                     bool isDouble = double.TryParse(activity.Text, out amount);
@@ -361,7 +360,7 @@ namespace Contoso_Bank
 
                 }
 
-                //handling suspend
+                //handling suspend-------------------------------------------------------------------------------------------------------
 
                 if (userData.GetProperty<bool>("suspending"))
                 {
@@ -434,7 +433,7 @@ namespace Contoso_Bank
                     reply = activity.CreateReply("Please enter a new username");
                 }
 
-                //retreieve, view-------------------------------------------------------------------------------------------------------
+                //view-------------------------------------------------------------------------------------------------------
                 if (intent == "view")
                 {
                     if (!userData.GetProperty<bool>("loggedin"))
@@ -464,7 +463,7 @@ namespace Contoso_Bank
                     reply = activity.CreateReply($"You have ${savings} in your account");
                 }
 
-                //update, withdraw-------------------------------------------------------------------------------------------------------
+                //withdraw-------------------------------------------------------------------------------------------------------
                 if (intent == "withdraw")
                 {
                     if (!userData.GetProperty<bool>("loggedin"))
@@ -487,7 +486,7 @@ namespace Contoso_Bank
                     await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
                 }
 
-                //update, deposit-------------------------------------------------------------------------------------------------------
+                //deposit-------------------------------------------------------------------------------------------------------
                 if (intent == "deposit")
                 {
                     if (!userData.GetProperty<bool>("loggedin"))
@@ -510,7 +509,7 @@ namespace Contoso_Bank
                     await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
                 }
 
-                //delete, suspend-------------------------------------------------------------------------------------------------------
+                //suspend-------------------------------------------------------------------------------------------------------
                 if (intent == "suspend")
                 {
                     if (!userData.GetProperty<bool>("loggedin"))
@@ -564,7 +563,101 @@ namespace Contoso_Bank
                     return Request.CreateResponse(HttpStatusCode.OK);
                 }
 
-                // return our reply to the user   -------------------------------------------------------------------------------------------------------             
+                //currency-------------------------------------------------------------------------------------------------------
+                if (intent == "currency")
+                {
+
+                    HttpClient currencyClient = new HttpClient();
+                    string currencyResponse = await currencyClient.GetStringAsync(new Uri("http://api.fixer.io/latest?base=nzd"));
+                    currencyObject.RootObject currency = JsonConvert.DeserializeObject<currencyObject.RootObject>(currencyResponse);
+
+                    double AUD = currency.rates.AUD;                    
+                    double CNY = currency.rates.CNY;                   
+                    double HKD = currency.rates.HKD;                    
+                    double JPY = currency.rates.JPY;
+                    double KRW = currency.rates.KRW;                    
+                    double RUB = currency.rates.RUB;                   
+                    double USD = currency.rates.USD;                    
+                    double EUR = currency.rates.EUR;
+
+                    //reply = activity.CreateReply($"AUD: {AUD} CNY: {CNY}");
+
+                    Activity replyToConversation = activity.CreateReply();
+                    replyToConversation.Recipient = activity.From;
+                    replyToConversation.Type = "message";
+                    replyToConversation.Attachments = new List<Attachment>();
+
+                    List<ReceiptItem> receiptList = new List<ReceiptItem>();
+
+                    ReceiptItem AUDItem = new ReceiptItem()
+                    {
+                        Title = "AUD",
+                        Price = AUD.ToString()
+                    };                    
+                    receiptList.Add(AUDItem);
+
+                    ReceiptItem CNYItem = new ReceiptItem()
+                    {
+                        Title = "CNY",
+                        Price = CNY.ToString()
+                    };
+                    receiptList.Add(CNYItem);
+
+                    ReceiptItem EURItem = new ReceiptItem()
+                    {
+                        Title = "EUR",
+                        Price = EUR.ToString()
+                    };
+                    receiptList.Add(EURItem);
+
+                    ReceiptItem HKDItem = new ReceiptItem()
+                    {
+                        Title = "HKD",
+                        Price = HKD.ToString()
+                    };
+                    receiptList.Add(HKDItem);
+
+                    ReceiptItem JPYItem = new ReceiptItem()
+                    {
+                        Title = "JPY",
+                        Price = JPY.ToString()
+                    };
+                    receiptList.Add(JPYItem);
+
+                    ReceiptItem KRWItem = new ReceiptItem()
+                    {
+                        Title = "KRW",
+                        Price = AUD.ToString()
+                    };
+                    receiptList.Add(KRWItem);
+
+                    ReceiptItem RUBItem = new ReceiptItem()
+                    {
+                        Title = "RUB",
+                        Price = RUB.ToString()
+                    };
+                    receiptList.Add(RUBItem);
+
+                    ReceiptItem USDItem = new ReceiptItem()
+                    {
+                        Title = "USD",
+                        Price = USD.ToString()
+                    };
+                    receiptList.Add(USDItem);
+                    
+                    ReceiptCard plCard = new ReceiptCard()
+                    {
+                        Title = "The current exchange rate based on New Zealand dollars",
+                        Items = receiptList,
+                    };
+
+                    Attachment plAttachment = plCard.ToAttachment();
+                    replyToConversation.Attachments.Add(plAttachment);
+                    await connector.Conversations.ReplyToActivityAsync(replyToConversation);
+                    return Request.CreateResponse(HttpStatusCode.OK);
+                }
+
+                // return our reply to the user-------------------------------------------------------------------------------------------------------             
                 await connector.Conversations.ReplyToActivityAsync(reply);
             }
             else
