@@ -433,27 +433,32 @@ namespace Contoso_Bank
                 //retreieve, view-------------------------------------------------------------------------------------------------------
                 if (intent == "view")
                 {
-                    if (!userData.GetProperty<bool>("loggedin"))
-                    {
-                        userData.SetProperty<bool>("wantView", true);
-                        await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
-                        reply = activity.CreateReply("You need to log on, please enter your username");
-                        userData.SetProperty<bool>("loggingInUserName", true);
-                        await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
-                        await connector.Conversations.ReplyToActivityAsync(reply);                        
-                        return Request.CreateResponse(HttpStatusCode.OK);
-                    }
+                    //if (!userData.GetProperty<bool>("loggedin"))
+                    //{
+                    //    userData.SetProperty<bool>("wantView", true);
+                    //    await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
+                    //    reply = activity.CreateReply("You need to log on, please enter your username");
+                    //    userData.SetProperty<bool>("loggingInUserName", true);
+                    //    await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
+                    //    await connector.Conversations.ReplyToActivityAsync(reply);                        
+                    //    return Request.CreateResponse(HttpStatusCode.OK);
+                    //}
+
+                    //userData.SetProperty<bool>("wantView", false);
+                    //await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
+                    //double savings = 0;
+                    //for(int i=0; i < rootObjectList.Count();i++)
+                    //{
+                    //    if(userData.GetProperty<string>("loggedInUserName") == rootObjectList[i].userName)
+                    //    {
+                    //        savings = rootObjectList[i].savings;
+                    //    }
+                    //}
+                    //reply = activity.CreateReply($"You have ${savings} in your account");
 
                     userData.SetProperty<bool>("wantView", false);
                     await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
-                    double savings = 0;
-                    for(int i=0; i < rootObjectList.Count();i++)
-                    {
-                        if(userData.GetProperty<string>("loggedInUserName") == rootObjectList[i].userName)
-                        {
-                            savings = rootObjectList[i].savings;
-                        }
-                    }
+                    double savings = rootObjectList[0].savings;
                     reply = activity.CreateReply($"You have ${savings} in your account");
                 }
 
