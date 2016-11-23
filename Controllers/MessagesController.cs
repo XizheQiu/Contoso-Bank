@@ -415,7 +415,7 @@ namespace Contoso_Bank
                 //clearing user data-------------------------------------------------------------------------------------------------------
                 if (activity.Text.ToLower().Contains("clear"))
                 {
-                    reply = activity.CreateReply($"cleared and just test{rootObjectList[0].savings}");
+                    reply = activity.CreateReply($"cleared and just first saving is{rootObjectList[0].savings} and intent is {intent} and logged in status is {userData.GetProperty<bool>("loggedin")}");
                     await stateClient.BotState.DeleteStateForUserAsync(activity.ChannelId, activity.From.Id);
                     await connector.Conversations.ReplyToActivityAsync(reply);
                     return Request.CreateResponse(HttpStatusCode.OK);
