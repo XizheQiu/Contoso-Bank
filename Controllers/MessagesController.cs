@@ -60,6 +60,7 @@ namespace Contoso_Bank
 
                 if (userData.GetProperty<bool>("loggingInUserName"))
                 {
+                    userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                     userData.SetProperty<bool>("loggingInUserName", false);
                     userData.SetProperty<bool>("loggingInPassword", true);
                     userData.SetProperty<string>("logInUsername", activity.Text);
@@ -71,6 +72,7 @@ namespace Contoso_Bank
 
                 if (userData.GetProperty<bool>("loggingInPassword"))
                 {
+                    userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                     userData.SetProperty<bool>("loggingInPassword", false);
                     userData.SetProperty<string>("logInPassword", activity.Text);
 
@@ -83,6 +85,7 @@ namespace Contoso_Bank
                         
                         if (loggingInUsername == rootObjectList[i].userName && loggingInPassword == rootObjectList[i].password)
                         {
+                            userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                             userData.SetProperty<bool>("loggedin", true);
                             userData.SetProperty<DateTime>("loggedOnExpiryTime", DateTime.Now.AddMinutes(25));
                             userData.SetProperty<string>("loggedInUserName", loggingInUsername);
@@ -118,6 +121,7 @@ namespace Contoso_Bank
 
                 if (userData.GetProperty<bool>("registerReady"))
                 {
+                    userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                     userData.SetProperty<bool>("registerReady", false);
                     if (activity.Text == "Proceed")
                     {
@@ -168,6 +172,7 @@ namespace Contoso_Bank
 
                     if (repeatedUsername == false)
                     {
+                        userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                         userData.SetProperty<bool>("registerUserName", false);
                         userData.SetProperty<bool>("registerPassword", true);
                         userData.SetProperty<string>("userName", activity.Text);
@@ -184,6 +189,7 @@ namespace Contoso_Bank
 
                 if (userData.GetProperty<bool>("registerPassword"))
                 {
+                    userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                     userData.SetProperty<bool>("registerPassword", false);
                     userData.SetProperty<bool>("registerAddress", true);
                     userData.SetProperty<string>("password", activity.Text);
@@ -195,6 +201,7 @@ namespace Contoso_Bank
 
                 if (userData.GetProperty<bool>("registerAddress"))
                 {
+                    userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                     userData.SetProperty<bool>("registerAddress", false);
                     userData.SetProperty<bool>("registerPhone", true);
                     userData.SetProperty<string>("address", activity.Text);
@@ -206,11 +213,13 @@ namespace Contoso_Bank
 
                 if (userData.GetProperty<bool>("registerPhone"))
                 {
+                    userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                     userData.SetProperty<bool>("registerPhone", false);
                     userData.SetProperty<string>("phone", activity.Text);
+                    userData.SetProperty<bool>("registerReady", true);
                     await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
 
-                    userData.SetProperty<bool>("registerReady", true);
+ 
                     string userName = userData.GetProperty<string>("userName");
                     string password = userData.GetProperty<string>("password");
                     string address = userData.GetProperty<string>("address");
@@ -297,6 +306,7 @@ namespace Contoso_Bank
                     {
                         rootObject.savings += amount;
                         await AzureManager.AzureManagerInstance.UpdatexizhesContosoBank(rootObject);
+                        userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                         userData.SetProperty<bool>("depositing", false);
                         reply = activity.CreateReply($"Deposit suceeded, you now have {rootObject.savings}");
                         await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
@@ -336,6 +346,7 @@ namespace Contoso_Bank
                     {
                         rootObject.savings -= amount;
                         await AzureManager.AzureManagerInstance.UpdatexizhesContosoBank(rootObject);
+                        userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                         userData.SetProperty<bool>("withdrawing", false);
                         reply = activity.CreateReply($"Withdrawal suceeded, you now have {rootObject.savings}");
                         await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
@@ -372,6 +383,7 @@ namespace Contoso_Bank
                     else if(activity.Text == "Cancel")
                     {
                         reply = activity.CreateReply("Your suspend is cancelled.");
+                        userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                         userData.SetProperty<bool>("suspending", false);
                         await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
                     }
@@ -429,6 +441,7 @@ namespace Contoso_Bank
                 //create, register-------------------------------------------------------------------------------------------------------
                 if (intent == "register")
                 {
+                    userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                     userData.SetProperty<bool>("registerUserName", true);
                     await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
                     reply = activity.CreateReply("Please enter a new username");
@@ -437,32 +450,30 @@ namespace Contoso_Bank
                 //retreieve, view-------------------------------------------------------------------------------------------------------
                 if (intent == "view")
                 {
-                    //if (!userData.GetProperty<bool>("loggedin"))
-                    //{
-                    //    userData.SetProperty<bool>("wantView", true);
-                    //    await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
-                    //    reply = activity.CreateReply("You need to log on, please enter your username");
-                    //    userData.SetProperty<bool>("loggingInUserName", true);
-                    //    await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
-                    //    await connector.Conversations.ReplyToActivityAsync(reply);                        
-                    //    return Request.CreateResponse(HttpStatusCode.OK);
-                    //}
+                    if (!userData.GetProperty<bool>("loggedin"))
+                    {
+                        userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
+                        userData.SetProperty<bool>("wantView", true);
+                        await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
+                        reply = activity.CreateReply("You need to log on, please enter your username");
+                        userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
+                        userData.SetProperty<bool>("loggingInUserName", true);
+                        await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
+                        await connector.Conversations.ReplyToActivityAsync(reply);
+                        return Request.CreateResponse(HttpStatusCode.OK);
+                    }
 
-                    //userData.SetProperty<bool>("wantView", false);
-                    //await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
-                    //double savings = 0;
-                    //for(int i=0; i < rootObjectList.Count();i++)
-                    //{
-                    //    if(userData.GetProperty<string>("loggedInUserName") == rootObjectList[i].userName)
-                    //    {
-                    //        savings = rootObjectList[i].savings;
-                    //    }
-                    //}
-                    //reply = activity.CreateReply($"You have ${savings} in your account");
-
+                    userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                     userData.SetProperty<bool>("wantView", false);
                     await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
-                    double savings = rootObjectList[0].savings;
+                    double savings = 0;
+                    for (int i = 0; i < rootObjectList.Count(); i++)
+                    {
+                        if (userData.GetProperty<string>("loggedInUserName") == rootObjectList[i].userName)
+                        {
+                            savings = rootObjectList[i].savings;
+                        }
+                    }
                     reply = activity.CreateReply($"You have ${savings} in your account");
                 }
 
@@ -471,15 +482,18 @@ namespace Contoso_Bank
                 {
                     if (!userData.GetProperty<bool>("loggedin"))
                     {
+                        userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                         userData.SetProperty<bool>("wantWithdraw", true);
                         await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
                         reply = activity.CreateReply("You need to log on, please enter your username");
+                        userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                         userData.SetProperty<bool>("loggingInUserName", true);
                         await connector.Conversations.ReplyToActivityAsync(reply);
                         await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
                         return Request.CreateResponse(HttpStatusCode.OK);
                     }
 
+                    userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                     userData.SetProperty<bool>("wantWithdraw", false);
                     userData.SetProperty<bool>("withdrawing", true);
                     reply = activity.CreateReply("How much would you like to withdraw? Please specify an amount");
@@ -491,15 +505,18 @@ namespace Contoso_Bank
                 {
                     if (!userData.GetProperty<bool>("loggedin"))
                     {
+                        userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                         userData.SetProperty<bool>("wantDeposit", true);
                         await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
                         reply = activity.CreateReply("You need to log on, please enter your username");
+                        userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                         userData.SetProperty<bool>("loggingInUserName", true);
                         await connector.Conversations.ReplyToActivityAsync(reply);
                         await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
                         return Request.CreateResponse(HttpStatusCode.OK);
                     }
 
+                    userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                     userData.SetProperty<bool>("wantDeposit", false);
                     userData.SetProperty<bool>("depositing", true);
                     reply = activity.CreateReply("How much would you like to deposit? Please specify an amount");
@@ -511,15 +528,18 @@ namespace Contoso_Bank
                 {
                     if (!userData.GetProperty<bool>("loggedin"))
                     {
+                        userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                         userData.SetProperty<bool>("wantSuspend", true);
                         await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
                         reply = activity.CreateReply("You need to log on, please enter your username");
+                        userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                         userData.SetProperty<bool>("loggingInUserName", true);
                         await connector.Conversations.ReplyToActivityAsync(reply);
                         await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
                         return Request.CreateResponse(HttpStatusCode.OK);
                     }
 
+                    userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                     userData.SetProperty<bool>("wantSuspend", false);
                     userData.SetProperty<bool>("suspending", true);
                     await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
