@@ -287,31 +287,92 @@ namespace Contoso_Bank
                         return Request.CreateResponse(HttpStatusCode.OK);
                     }
 
-                    xizhesContosoBank rootObject = null;
+                    userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
+                    userData.SetProperty<bool>("depositing", false);
+                    userData.SetProperty<double>("depositAmount", amount);
+                    userData.SetProperty<bool>("depositReady", true);
+                    await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
 
-                    for (int i = 0; i < rootObjectList.Count(); i++)
+                    Activity replyToConversation = activity.CreateReply();
+                    replyToConversation.Recipient = activity.From;
+                    replyToConversation.Type = "message";
+                    replyToConversation.Attachments = new List<Attachment>();
+
+                    List<CardAction> cardButtons = new List<CardAction>();
+                    CardAction proceedButton = new CardAction()
                     {
-                        if (userData.GetProperty<string>("loggedInUserName") == rootObjectList[i].userName)
+                        Value = "Proceed",
+                        Type = "postBack",
+                        Title = "Proceed",
+                    };
+                    cardButtons.Add(proceedButton);
+
+                    CardAction cancelButton = new CardAction()
+                    {
+                        Value = "Cancel",
+                        Type = "postBack",
+                        Title = "Cancel"
+                    };
+                    cardButtons.Add(cancelButton);
+
+                    List<CardImage> cardImages = new List<CardImage>();
+                    cardImages.Add(new CardImage(url: "http://drdianahoppe.com/wp-content/uploads/2013/04/Piggy-Bank.jpg"));
+
+                    HeroCard plCard = new HeroCard()
+                    {
+                        Title = "Confirmation",
+                        Text = $"You want to deposit ${amount.ToString()}",
+                        Images = cardImages,
+                        Buttons = cardButtons
+                    };
+
+                    Attachment plAttachment = plCard.ToAttachment();
+                    replyToConversation.Attachments.Add(plAttachment);
+
+                    await connector.Conversations.SendToConversationAsync(replyToConversation);
+
+                    return Request.CreateResponse(HttpStatusCode.OK);
+                }
+
+                if (userData.GetProperty<bool>("depositReady"))
+                {
+                    if (activity.Text == "Proceed")
+                    {
+
+                        xizhesContosoBank rootObject = null;
+
+                        for (int i = 0; i < rootObjectList.Count(); i++)
                         {
-                            rootObject = rootObjectList[i];
+                            if (userData.GetProperty<string>("loggedInUserName") == rootObjectList[i].userName)
+                            {
+                                rootObject = rootObjectList[i];
+                            }
+                        }
+
+                        if (rootObject != null)
+                        {
+                            rootObject.savings += userData.GetProperty<double>("depositAmount");
+                            await AzureManager.AzureManagerInstance.UpdatexizhesContosoBank(rootObject);
+                            userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
+                            userData.SetProperty<bool>("depositing", false);
+                            reply = activity.CreateReply($"Deposit suceeded, you now have {rootObject.savings}");
+                            await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
+                            await connector.Conversations.ReplyToActivityAsync(reply);
+                            return Request.CreateResponse(HttpStatusCode.OK);
+                        }
+                        else
+                        {
+                            reply = activity.CreateReply("Error, please contact the bank directly.");
                         }
                     }
-
-                    if (rootObject != null)
+                    else if (activity.Text == "Cancel")
                     {
-                        rootObject.savings += amount;
-                        await AzureManager.AzureManagerInstance.UpdatexizhesContosoBank(rootObject);
-                        userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
-                        userData.SetProperty<bool>("depositing", false);
-                        reply = activity.CreateReply($"Deposit suceeded, you now have {rootObject.savings}");
-                        await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
+                        reply = activity.CreateReply("Your deposit has been cancelled");
+                        await stateClient.BotState.DeleteStateForUserAsync(activity.ChannelId, activity.From.Id);
                         await connector.Conversations.ReplyToActivityAsync(reply);
                         return Request.CreateResponse(HttpStatusCode.OK);
                     }
-                    else
-                    {
-                        reply = activity.CreateReply("Error, please contact the bank directly.");
-                    }
+                    
                 }
 
 
@@ -567,10 +628,20 @@ namespace Contoso_Bank
                         return Request.CreateResponse(HttpStatusCode.OK);
                     }
 
+                    xizhesContosoBank rootObject = null;
+
+                    for (int i = 0; i < rootObjectList.Count(); i++)
+                    {
+                        if (userData.GetProperty<string>("loggedInUserName") == rootObjectList[i].userName)
+                        {
+                            rootObject = rootObjectList[i];
+                        }
+                    }
+
                     userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                     userData.SetProperty<bool>("wantDeposit", false);
                     userData.SetProperty<bool>("depositing", true);
-                    reply = activity.CreateReply("How much would you like to deposit? Please specify an amount");
+                    reply = activity.CreateReply($"You have ${rootObject.savings} in your account, How much would you like to deposit? Please specify an amount");
                     await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
                 }
 
