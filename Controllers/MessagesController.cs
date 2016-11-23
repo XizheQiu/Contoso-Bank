@@ -42,14 +42,14 @@ namespace Contoso_Bank
                 await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
 
 
-                ////clearing user data-------------------------------------------------------------------------------------------------------
-                //if (activity.Text.ToLower().Contains("clear"))
-                //{
-                //    reply = activity.CreateReply("User data cleared");
-                //    await stateClient.BotState.DeleteStateForUserAsync(activity.ChannelId, activity.From.Id);
-                //    await connector.Conversations.ReplyToActivityAsync(reply);
-                //    return Request.CreateResponse(HttpStatusCode.OK);
-                //}
+                //clearing user data-------------------------------------------------------------------------------------------------------
+                if (activity.Text.ToLower().Contains("clear"))
+                {
+                    reply = activity.CreateReply("User data cleared");
+                    await stateClient.BotState.DeleteStateForUserAsync(activity.ChannelId, activity.From.Id);
+                    await connector.Conversations.ReplyToActivityAsync(reply);
+                    return Request.CreateResponse(HttpStatusCode.OK);
+                }
 
                 //accessing easytable-------------------------------------------------------------------------------------------------------
 
@@ -423,20 +423,6 @@ namespace Contoso_Bank
                 {
                     intent = "suspend";
                 }
-
-                //clearing user data-------------------------------------------------------------------------------------------------------
-                if (activity.Text.ToLower().Contains("clear"))
-                {
-                    userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
-                    userData.SetProperty<bool>("test", true);
-                    await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
-                    reply = activity.CreateReply($"cleared, tried set property and just first saving is{rootObjectList[0].savings} and intent is {intent} and test property is {userData.GetProperty<bool>("loggedin")}");
-                    
-                    await stateClient.BotState.DeleteStateForUserAsync(activity.ChannelId, activity.From.Id);
-                    await connector.Conversations.ReplyToActivityAsync(reply);
-                    return Request.CreateResponse(HttpStatusCode.OK);
-                }
-
 
                 //create, register-------------------------------------------------------------------------------------------------------
                 if (intent == "register")
