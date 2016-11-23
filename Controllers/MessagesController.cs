@@ -415,7 +415,7 @@ namespace Contoso_Bank
                 //clearing user data-------------------------------------------------------------------------------------------------------
                 if (activity.Text.ToLower().Contains("clear"))
                 {
-                    reply = activity.CreateReply("User data cleared");
+                    reply = activity.CreateReply($"cleared and just test{rootObjectList[0].savings}");
                     await stateClient.BotState.DeleteStateForUserAsync(activity.ChannelId, activity.From.Id);
                     await connector.Conversations.ReplyToActivityAsync(reply);
                     return Request.CreateResponse(HttpStatusCode.OK);
