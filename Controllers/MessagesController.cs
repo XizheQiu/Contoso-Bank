@@ -45,7 +45,7 @@ namespace Contoso_Bank
                 //clearing user data-------------------------------------------------------------------------------------------------------
                 if (activity.Text.ToLower().Contains("clear"))
                 {
-                    reply = activity.CreateReply("User data cleared");
+                    reply = activity.CreateReply("You user data have been cleared");
                     await stateClient.BotState.DeleteStateForUserAsync(activity.ChannelId, activity.From.Id);
                     await connector.Conversations.ReplyToActivityAsync(reply);
                     return Request.CreateResponse(HttpStatusCode.OK);
@@ -63,7 +63,7 @@ namespace Contoso_Bank
                     userData.SetProperty<bool>("loggingInUserName", false);
                     userData.SetProperty<bool>("loggingInPassword", true);
                     userData.SetProperty<string>("logInUsername", activity.Text);
-                    reply = activity.CreateReply("Please enter your password");
+                    reply = activity.CreateReply("...and your password please? Don't worry I promise I won't steal it~~");
                     await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
                     await connector.Conversations.ReplyToActivityAsync(reply);
                     return Request.CreateResponse(HttpStatusCode.OK);
@@ -552,7 +552,7 @@ namespace Contoso_Bank
                         userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                         userData.SetProperty<bool>("wantView", true);
                         await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
-                        reply = activity.CreateReply("You need to log on, please enter your username");
+                        reply = activity.CreateReply("Sure but you need to log on first, please enter your username");
                         userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                         userData.SetProperty<bool>("loggingInUserName", true);
                         await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
@@ -619,7 +619,7 @@ namespace Contoso_Bank
                         userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                         userData.SetProperty<bool>("wantWithdraw", true);
                         await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
-                        reply = activity.CreateReply("You need to log on, please enter your username");
+                        reply = activity.CreateReply("Sure but you need to log on first, please enter your username");
                         userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                         userData.SetProperty<bool>("loggingInUserName", true);
                         await connector.Conversations.ReplyToActivityAsync(reply);
@@ -652,7 +652,7 @@ namespace Contoso_Bank
                         userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                         userData.SetProperty<bool>("wantDeposit", true);
                         await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
-                        reply = activity.CreateReply("You need to log on, please enter your username");
+                        reply = activity.CreateReply("Sure but you need to log on first, please enter your username");
                         userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                         userData.SetProperty<bool>("loggingInUserName", true);
                         await connector.Conversations.ReplyToActivityAsync(reply);
@@ -685,7 +685,7 @@ namespace Contoso_Bank
                         userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                         userData.SetProperty<bool>("wantSuspend", true);
                         await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
-                        reply = activity.CreateReply("You need to log on, please enter your username");
+                        reply = activity.CreateReply("Sure but you need to log on first, please enter your username");
                         userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                         userData.SetProperty<bool>("loggingInUserName", true);
                         await connector.Conversations.ReplyToActivityAsync(reply);
@@ -719,8 +719,14 @@ namespace Contoso_Bank
                     };
                     cardButtons.Add(cancelButton);
 
-                    SigninCard plCard = new SigninCard()
+                    List<CardImage> cardImages = new List<CardImage>();
+                    cardImages.Add(new CardImage(url: "http://drdianahoppe.com/wp-content/uploads/2013/04/Piggy-Bank.jpg"));
+
+                    HeroCard plCard = new HeroCard()
                     {
+                        Title = "Confirmation",
+                        Text = $"Are you sure you want to suspend your account?",
+                        Images = cardImages,
                         Buttons = cardButtons
                     };
 
