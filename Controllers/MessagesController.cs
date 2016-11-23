@@ -219,7 +219,7 @@ namespace Contoso_Bank
                     userData.SetProperty<bool>("registerReady", true);
                     await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
 
- 
+                    userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                     string userName = userData.GetProperty<string>("userName");
                     string password = userData.GetProperty<string>("password");
                     string address = userData.GetProperty<string>("address");
@@ -261,6 +261,7 @@ namespace Contoso_Bank
                     ThumbnailCard plCard = new ThumbnailCard()
                     {
                         Title = "Confirmation",
+                        Subtitle = "Enter 'Proceed/Retry/Cancel'",
                         Text = $"Username: {userName}  \nPassword: {password}  \nAddress: {address}  \nPhone: {phone}",
                         Images = cardImages,
                         Buttons = cardButtons
