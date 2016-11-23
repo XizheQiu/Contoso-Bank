@@ -261,7 +261,6 @@ namespace Contoso_Bank
                     HeroCard plCard = new HeroCard()
                     {
                         Title = "Confirmation",
-                        Subtitle = "Enter 'Proceed/Retry/Cancel'",
                         Text = $"Username: {userName}  \nPassword: {password}  \nAddress: {address}  \nPhone: {phone}",
                         Images = cardImages,
                         Buttons = cardButtons
