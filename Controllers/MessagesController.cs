@@ -224,41 +224,22 @@ namespace Contoso_Bank
                     string password = userData.GetProperty<string>("password");
                     string address = userData.GetProperty<string>("address");
                     string phone = userData.GetProperty<string>("phone");
+                    
+                    Activity replyToConversation = activity.CreateReply($"Please confirm the following:");
+                    await connector.Conversations.SendToConversationAsync(replyToConversation);
+                    replyToConversation = activity.CreateReply($"Username: {userName}");
+                    await connector.Conversations.SendToConversationAsync(replyToConversation);
+                    replyToConversation = activity.CreateReply($"Password: {password}");
+                    await connector.Conversations.SendToConversationAsync(replyToConversation);
+                    replyToConversation = activity.CreateReply($"Address: {address}");
+                    await connector.Conversations.SendToConversationAsync(replyToConversation);
+                    replyToConversation = activity.CreateReply($"Phone: {phone}");
+                    await connector.Conversations.SendToConversationAsync(replyToConversation);
 
-                    Activity replyToConversation = activity.CreateReply();
+                    replyToConversation = activity.CreateReply();
                     replyToConversation.Recipient = activity.From;
                     replyToConversation.Type = "message";
                     replyToConversation.Attachments = new List<Attachment>();
-
-                    List<ReceiptItem> receiptList = new List<ReceiptItem>();
-
-                    ReceiptItem usernameItem = new ReceiptItem()
-                    {
-                        Title = "Username",
-                        Price = userName
-                    };
-                    receiptList.Add(usernameItem);
-
-                    ReceiptItem passwordItem = new ReceiptItem()
-                    {
-                        Title = "Password",
-                        Price = password
-                    };
-                    receiptList.Add(passwordItem);
-
-                    ReceiptItem addressItem = new ReceiptItem()
-                    {
-                        Title = "Address",
-                        Price = address
-                    };
-                    receiptList.Add(addressItem);
-
-                    ReceiptItem phoneItem = new ReceiptItem()
-                    {
-                        Title = "Phone number",
-                        Price = phone
-                    };
-                    receiptList.Add(phoneItem);
 
                     List<CardAction> cardButtons = new List<CardAction>();
                     CardAction proceedButton = new CardAction()
@@ -285,12 +266,9 @@ namespace Contoso_Bank
                     };
                     cardButtons.Add(cancelButton);
 
-                    ReceiptCard plCard = new ReceiptCard()
+                    SigninCard plCard = new SigninCard()
                     {
-                        Title = "Please confirm the following",
-                        Items = receiptList,
                         Buttons = cardButtons
-
                     };
 
                     Attachment plAttachment = plCard.ToAttachment();
