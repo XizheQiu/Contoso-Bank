@@ -42,14 +42,14 @@ namespace Contoso_Bank
                 await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
 
 
-                //clearing user data-------------------------------------------------------------------------------------------------------
-                if (activity.Text.ToLower().Contains("clear"))
-                {
-                    reply = activity.CreateReply("User data cleared");
-                    await stateClient.BotState.DeleteStateForUserAsync(activity.ChannelId, activity.From.Id);
-                    await connector.Conversations.ReplyToActivityAsync(reply);
-                    return Request.CreateResponse(HttpStatusCode.OK);
-                }
+                ////clearing user data-------------------------------------------------------------------------------------------------------
+                //if (activity.Text.ToLower().Contains("clear"))
+                //{
+                //    reply = activity.CreateReply("User data cleared");
+                //    await stateClient.BotState.DeleteStateForUserAsync(activity.ChannelId, activity.From.Id);
+                //    await connector.Conversations.ReplyToActivityAsync(reply);
+                //    return Request.CreateResponse(HttpStatusCode.OK);
+                //}
 
                 //accessing easytable-------------------------------------------------------------------------------------------------------
 
@@ -410,6 +410,15 @@ namespace Contoso_Bank
                 if (manualIntent == "suspend")
                 {
                     intent = "suspend";
+                }
+
+                //clearing user data-------------------------------------------------------------------------------------------------------
+                if (activity.Text.ToLower().Contains("clear"))
+                {
+                    reply = activity.CreateReply("User data cleared");
+                    await stateClient.BotState.DeleteStateForUserAsync(activity.ChannelId, activity.From.Id);
+                    await connector.Conversations.ReplyToActivityAsync(reply);
+                    return Request.CreateResponse(HttpStatusCode.OK);
                 }
 
 
