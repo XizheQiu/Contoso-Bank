@@ -78,6 +78,7 @@ namespace Contoso_Bank
 
                     string loggingInUsername = userData.GetProperty<string>("logInUsername");
                     string loggingInPassword = userData.GetProperty<string>("logInPassword");
+                    await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
 
                     reply = activity.CreateReply("Username or password incorrect, try again!");
                     for (int i = 0; i < rootObjectList.Count();i++)
