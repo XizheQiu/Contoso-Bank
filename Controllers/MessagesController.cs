@@ -39,6 +39,7 @@ namespace Contoso_Bank
                         userData.SetProperty<bool>("loggedin", false);
                     }
                 }
+                await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
 
 
                 //clearing user data-------------------------------------------------------------------------------------------------------
@@ -429,8 +430,8 @@ namespace Contoso_Bank
                         await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
                         reply = activity.CreateReply("You need to log on, please enter your username");
                         userData.SetProperty<bool>("loggingInUserName", true);
-                        await connector.Conversations.ReplyToActivityAsync(reply);
                         await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
+                        await connector.Conversations.ReplyToActivityAsync(reply);                        
                         return Request.CreateResponse(HttpStatusCode.OK);
                     }
 
