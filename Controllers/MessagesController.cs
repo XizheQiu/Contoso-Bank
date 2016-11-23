@@ -732,7 +732,6 @@ namespace Contoso_Bank
 
                     Attachment plAttachment = plCard.ToAttachment();
                     replyToConversation.Attachments.Add(plAttachment);
-                    await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
                     await connector.Conversations.SendToConversationAsync(replyToConversation);
                     return Request.CreateResponse(HttpStatusCode.OK);
                 }
