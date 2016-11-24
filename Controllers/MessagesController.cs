@@ -359,7 +359,7 @@ namespace Contoso_Bank
                             await AzureManager.AzureManagerInstance.UpdatexizhesContosoBank(rootObject);
                             userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                             userData.SetProperty<bool>("depositReady", false);
-                            reply = activity.CreateReply($"Deposit suceeded, you now have {rootObject.savings}");
+                            reply = activity.CreateReply($"Deposit suceeded, you now have ${rootObject.savings}");
                             await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
                             await connector.Conversations.ReplyToActivityAsync(reply);
                             return Request.CreateResponse(HttpStatusCode.OK);
@@ -458,7 +458,7 @@ namespace Contoso_Bank
                             await AzureManager.AzureManagerInstance.UpdatexizhesContosoBank(rootObject);
                             userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                             userData.SetProperty<bool>("withdrawReady", false);
-                            reply = activity.CreateReply($"Withdrawal suceeded, you now have {rootObject.savings} left in your account");
+                            reply = activity.CreateReply($"Withdrawal suceeded, you now have ${rootObject.savings} left in your account");
                             await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
                             await connector.Conversations.ReplyToActivityAsync(reply);
                         }
@@ -751,10 +751,6 @@ namespace Contoso_Bank
 
                     double AUD = currency.rates.AUD;                    
                     double CNY = currency.rates.CNY;                   
-                    double HKD = currency.rates.HKD;                    
-                    double JPY = currency.rates.JPY;
-                    double KRW = currency.rates.KRW;                    
-                    double RUB = currency.rates.RUB;                   
                     double USD = currency.rates.USD;                    
                     double EUR = currency.rates.EUR;
 
@@ -769,7 +765,7 @@ namespace Contoso_Bank
                     HeroCard plCard = new HeroCard()
                     {
                         Title = "Exchange rate based on NZD",
-                        Text = $"AUD: {AUD}  \nCNY: {CNY}  \nEUR: {EUR}  \nHKD: {HKD}  \nJPY: {JPY}  \nKRW: {KRW}  \nRUB: {RUB}  \nUSD: {USD}",
+                        Text = $"AUD: {AUD}  \nCNY: {CNY}  \nEUR: {EUR}  \nUSD: {USD}",
                         Images = cardImages
                     };
 
