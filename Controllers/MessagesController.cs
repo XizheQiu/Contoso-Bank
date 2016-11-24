@@ -11,6 +11,8 @@ using Contoso_Bank.Models;
 using System.Collections.Generic;
 using Microsoft.WindowsAzure.MobileServices;
 using Contoso_Bank.DataModels;
+using Microsoft.ProjectOxford.Vision;
+using Microsoft.ProjectOxford.Vision.Contract;
 
 namespace Contoso_Bank
 {
@@ -27,7 +29,21 @@ namespace Contoso_Bank
             {
                 Activity reply = activity.CreateReply("Hi! I am the most AMAAAAZING bot of Xizhe Contoso Bank. You can ask me to help you register, check balance, deposit, withdraw or suspend your account. Oh and don't forget I can also check the exchange rate for you. So if you need anything, just come and have a chat with me :)");
                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
-                string manualIntent = "none";
+                string manualIntent = "";
+
+                if (activity.Text == "")
+                {
+                    VisionServiceClient VisionServiceClient = new VisionServiceClient("06874f5b2f31475695c040616f0127d8");
+
+                    //OcrResults ocrResults = await VisionServiceClient.RecognizeTextAsync(activity.Attachments[0].ContentUrl);
+                    AnalysisResult analysisResult = await VisionServiceClient.DescribeAsync(activity.Attachments[0].ContentUrl,3);
+                    //reply = activity.CreateReply($"{ocrResults.Orientation}");
+                    reply = activity.CreateReply($"{analysisResult.Description.Captions[0].Text}");
+                    await connector.Conversations.SendToConversationAsync(reply);
+
+                    return Request.CreateResponse(HttpStatusCode.OK);
+
+                }
 
                 //grabbing state-------------------------------------------------------------------------------------------------------
                 StateClient stateClient = activity.GetStateClient();
@@ -775,9 +791,10 @@ namespace Contoso_Bank
 
                     return Request.CreateResponse(HttpStatusCode.OK);
                 }
+                
 
-                // return our reply to the user-------------------------------------------------------------------------------------------------------             
-                await connector.Conversations.ReplyToActivityAsync(reply);
+                    // return our reply to the user-------------------------------------------------------------------------------------------------------             
+                    await connector.Conversations.ReplyToActivityAsync(reply);
             }
             else
             {
