@@ -256,7 +256,7 @@ namespace Contoso_Bank
                     cardButtons.Add(cancelButton);
 
                     List<CardImage> cardImages = new List<CardImage>();
-                    cardImages.Add(new CardImage(url: "http://drdianahoppe.com/wp-content/uploads/2013/04/Piggy-Bank.jpg"));
+                    cardImages.Add(new CardImage(url: "https://s16.postimg.org/ffpktvf91/Logomakr_3x_VQy_D.png"));
 
                     HeroCard plCard = new HeroCard()
                     {
@@ -315,7 +315,7 @@ namespace Contoso_Bank
                     cardButtons.Add(cancelButton);
 
                     List<CardImage> cardImages = new List<CardImage>();
-                    cardImages.Add(new CardImage(url: "http://drdianahoppe.com/wp-content/uploads/2013/04/Piggy-Bank.jpg"));
+                    cardImages.Add(new CardImage(url: "https://s16.postimg.org/ffpktvf91/Logomakr_3x_VQy_D.png"));
 
                     HeroCard plCard = new HeroCard()
                     {
@@ -415,7 +415,7 @@ namespace Contoso_Bank
                     cardButtons.Add(cancelButton);
 
                     List<CardImage> cardImages = new List<CardImage>();
-                    cardImages.Add(new CardImage(url: "http://drdianahoppe.com/wp-content/uploads/2013/04/Piggy-Bank.jpg"));
+                    cardImages.Add(new CardImage(url: "https://s16.postimg.org/ffpktvf91/Logomakr_3x_VQy_D.png"));
 
                     HeroCard plCard = new HeroCard()
                     {
@@ -578,7 +578,7 @@ namespace Contoso_Bank
                     replyToConversation.Attachments = new List<Attachment>();
 
                     List<CardImage> cardImages = new List<CardImage>();
-                    cardImages.Add(new CardImage(url: "http://drdianahoppe.com/wp-content/uploads/2013/04/Piggy-Bank.jpg"));
+                    cardImages.Add(new CardImage(url: "https://s16.postimg.org/ffpktvf91/Logomakr_3x_VQy_D.png"));
 
                     List<CardAction> cardButtons = new List<CardAction>();
                     CardAction proceedButton = new CardAction()
@@ -720,7 +720,7 @@ namespace Contoso_Bank
                     cardButtons.Add(cancelButton);
 
                     List<CardImage> cardImages = new List<CardImage>();
-                    cardImages.Add(new CardImage(url: "http://drdianahoppe.com/wp-content/uploads/2013/04/Piggy-Bank.jpg"));
+                    cardImages.Add(new CardImage(url: "https://s16.postimg.org/ffpktvf91/Logomakr_3x_VQy_D.png"));
 
                     HeroCard plCard = new HeroCard()
                     {
@@ -759,7 +759,7 @@ namespace Contoso_Bank
                     replyToConversation.Attachments = new List<Attachment>();
 
                     List<CardImage> cardImages = new List<CardImage>();
-                    cardImages.Add(new CardImage(url: "http://drdianahoppe.com/wp-content/uploads/2013/04/Piggy-Bank.jpg"));
+                    cardImages.Add(new CardImage(url: "https://s16.postimg.org/ffpktvf91/Logomakr_3x_VQy_D.png"));
 
                     HeroCard plCard = new HeroCard()
                     {
