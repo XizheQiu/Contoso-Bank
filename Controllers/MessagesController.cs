@@ -815,8 +815,6 @@ namespace Contoso_Bank
                         await connector.Conversations.ReplyToActivityAsync(reply);
                         return Request.CreateResponse(HttpStatusCode.OK);
                     }
-
-
                 }
 
 
