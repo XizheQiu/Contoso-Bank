@@ -753,80 +753,26 @@ namespace Contoso_Bank
                     double USD = currency.rates.USD;                    
                     double EUR = currency.rates.EUR;
 
-                    //reply = activity.CreateReply($"AUD: {AUD} CNY: {CNY}");
-
                     Activity replyToConversation = activity.CreateReply();
                     replyToConversation.Recipient = activity.From;
                     replyToConversation.Type = "message";
                     replyToConversation.Attachments = new List<Attachment>();
 
-                    List<ReceiptItem> receiptList = new List<ReceiptItem>();
+                    List<CardImage> cardImages = new List<CardImage>();
+                    cardImages.Add(new CardImage(url: "http://drdianahoppe.com/wp-content/uploads/2013/04/Piggy-Bank.jpg"));
 
-                    ReceiptItem AUDItem = new ReceiptItem()
+                    HeroCard plCard = new HeroCard()
                     {
-                        Title = "AUD",
-                        Price = AUD.ToString()
-                    };                    
-                    receiptList.Add(AUDItem);
-
-                    ReceiptItem CNYItem = new ReceiptItem()
-                    {
-                        Title = "CNY",
-                        Price = CNY.ToString()
-                    };
-                    receiptList.Add(CNYItem);
-
-                    ReceiptItem EURItem = new ReceiptItem()
-                    {
-                        Title = "EUR",
-                        Price = EUR.ToString()
-                    };
-                    receiptList.Add(EURItem);
-
-                    ReceiptItem HKDItem = new ReceiptItem()
-                    {
-                        Title = "HKD",
-                        Price = HKD.ToString()
-                    };
-                    receiptList.Add(HKDItem);
-
-                    ReceiptItem JPYItem = new ReceiptItem()
-                    {
-                        Title = "JPY",
-                        Price = JPY.ToString()
-                    };
-                    receiptList.Add(JPYItem);
-
-                    ReceiptItem KRWItem = new ReceiptItem()
-                    {
-                        Title = "KRW",
-                        Price = AUD.ToString()
-                    };
-                    receiptList.Add(KRWItem);
-
-                    ReceiptItem RUBItem = new ReceiptItem()
-                    {
-                        Title = "RUB",
-                        Price = RUB.ToString()
-                    };
-                    receiptList.Add(RUBItem);
-
-                    ReceiptItem USDItem = new ReceiptItem()
-                    {
-                        Title = "USD",
-                        Price = USD.ToString()
-                    };
-                    receiptList.Add(USDItem);
-                    
-                    ReceiptCard plCard = new ReceiptCard()
-                    {
-                        Title = "The current exchange rate based on New Zealand dollars",
-                        Items = receiptList,
+                        Title = "Exchange rate based on NZD",
+                        Text = $"AUD: {AUD}  \nCNY: {CNY}  \nEUR: {EUR}  \nHKD: {HKD}  \nJPY: {JPY}  \nKRW: {KRW}  \nRUB: {RUB}  \nUSD: {USD}",
+                        Images = cardImages
                     };
 
                     Attachment plAttachment = plCard.ToAttachment();
                     replyToConversation.Attachments.Add(plAttachment);
-                    await connector.Conversations.ReplyToActivityAsync(replyToConversation);
+
+                    await connector.Conversations.SendToConversationAsync(replyToConversation);
+
                     return Request.CreateResponse(HttpStatusCode.OK);
                 }
 
