@@ -145,6 +145,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\analyticsObject.cs" />
     <Compile Include="Models\bankObject.cs" />
     <Compile Include="Models\currencyObject.cs" />
     <Compile Include="Models\luisObject.cs" />

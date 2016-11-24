@@ -13,7 +13,9 @@ using Microsoft.WindowsAzure.MobileServices;
 using Contoso_Bank.DataModels;
 using Microsoft.ProjectOxford.Vision;
 using Microsoft.ProjectOxford.Vision.Contract;
-using System.IO;
+using System.Web;
+using System.Text;
+using System.Net.Http.Headers;
 
 namespace Contoso_Bank
 {
@@ -31,22 +33,6 @@ namespace Contoso_Bank
                 Activity reply = activity.CreateReply("Hi! I am the most AMAAAAZING bot of Xizhe Contoso Bank. You can ask me to help you register, check balance, deposit, withdraw or suspend your account. Oh and don't forget I can also check the exchange rate for you. So if you need anything, just come and have a chat with me :)");
                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                 string manualIntent = "";
-
-                if (activity.Text == "")
-                {
-                    VisionServiceClient VisionServiceClient = new VisionServiceClient("642272cef13142ea88357539b8ae0146");
-
-                    //OcrResults ocrResults = await VisionServiceClient.RecognizeTextAsync(activity.Attachments[0].ContentUrl);
-                    //AnalysisResult analysisResult = await VisionServiceClient.DescribeAsync("https://openclipart.org/image/2400px/svg_to_png/223797/IwanPigSVG.png",3);
-                    AnalysisResult analysisResult = await VisionServiceClient.DescribeAsync(activity.Attachments[0].ContentUrl, 3);
-
-                    //reply = activity.CreateReply($"{ocrResults.Orientation}");
-                    reply = activity.CreateReply($"{analysisResult.Description.Captions[0].Text}");
-                    await connector.Conversations.SendToConversationAsync(reply);
-
-                    return Request.CreateResponse(HttpStatusCode.OK);
-
-                }
 
                 //grabbing state-------------------------------------------------------------------------------------------------------
                 StateClient stateClient = activity.GetStateClient();
@@ -794,10 +780,52 @@ namespace Contoso_Bank
 
                     return Request.CreateResponse(HttpStatusCode.OK);
                 }
-                
 
-                    // return our reply to the user-------------------------------------------------------------------------------------------------------             
-                    await connector.Conversations.ReplyToActivityAsync(reply);
+                //feedback---------------------------------------------------------------------------------------------------------
+                if (intent == "feedback")
+                {
+
+                    var client = new HttpClient();
+
+                    // Request headers
+                    client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "ef8666fa564644f19aad8532f3ca29c5");
+
+                    var uri = "https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/sentiment";
+
+                    HttpResponseMessage analyticsResponse;
+
+                    using (var content = new StringContent("{\"documents\": [{\"language\": \"en\",\"id\": \"string\",\"text\": \"" + activity.Text +"\"}]}", Encoding.UTF8, "application/json"))
+                    {
+                        content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                        analyticsResponse = await client.PostAsync(uri, content);
+                    }
+                    string responseString = await analyticsResponse.Content.ReadAsStringAsync();
+                    analyticsObject.RootObject analyticsObject = JsonConvert.DeserializeObject<analyticsObject.RootObject>(responseString);
+                    if(analyticsObject.documents[0].score > 0.8)
+                    {
+                        reply = activity.CreateReply("Thank you for liking me! I will sure to be better and better! (Fun fact: I like you too you know? :))");
+                        await connector.Conversations.ReplyToActivityAsync(reply);
+                        return Request.CreateResponse(HttpStatusCode.OK);
+                    }
+                    else if(analyticsObject.documents[0].score < 0.3)
+                    {
+                        reply = activity.CreateReply("I am sorry for disappointing you, I will sure be improving myself and hope to become a better me :(");
+                        await connector.Conversations.ReplyToActivityAsync(reply);
+                        return Request.CreateResponse(HttpStatusCode.OK);
+                    }
+                    else
+                    {
+                        reply = activity.CreateReply("Thank you for your feedback! I will sure to be working twice as hard to make you like me more!");
+                        await connector.Conversations.ReplyToActivityAsync(reply);
+                        return Request.CreateResponse(HttpStatusCode.OK);
+                    }
+
+
+                }
+
+
+                // return our reply to the user-------------------------------------------------------------------------------------------------------             
+                await connector.Conversations.ReplyToActivityAsync(reply);
             }
             else
             {
