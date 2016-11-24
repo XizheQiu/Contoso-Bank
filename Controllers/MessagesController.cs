@@ -13,6 +13,7 @@ using Microsoft.WindowsAzure.MobileServices;
 using Contoso_Bank.DataModels;
 using Microsoft.ProjectOxford.Vision;
 using Microsoft.ProjectOxford.Vision.Contract;
+using System.IO;
 
 namespace Contoso_Bank
 {
@@ -33,10 +34,12 @@ namespace Contoso_Bank
 
                 if (activity.Text == "")
                 {
-                    VisionServiceClient VisionServiceClient = new VisionServiceClient("06874f5b2f31475695c040616f0127d8");
+                    VisionServiceClient VisionServiceClient = new VisionServiceClient("642272cef13142ea88357539b8ae0146");
 
                     //OcrResults ocrResults = await VisionServiceClient.RecognizeTextAsync(activity.Attachments[0].ContentUrl);
-                    AnalysisResult analysisResult = await VisionServiceClient.DescribeAsync(activity.Attachments[0].ContentUrl,3);
+                    //AnalysisResult analysisResult = await VisionServiceClient.DescribeAsync("https://openclipart.org/image/2400px/svg_to_png/223797/IwanPigSVG.png",3);
+                    AnalysisResult analysisResult = await VisionServiceClient.DescribeAsync(activity.Attachments[0].ContentUrl, 3);
+
                     //reply = activity.CreateReply($"{ocrResults.Orientation}");
                     reply = activity.CreateReply($"{analysisResult.Description.Captions[0].Text}");
                     await connector.Conversations.SendToConversationAsync(reply);
